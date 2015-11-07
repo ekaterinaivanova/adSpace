@@ -4,4 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="app_id">1512806935706528</string>
+<<<<<<< HEAD
+=======
+    <string name="title_activity_share">ShareActivity</string>
+>>>>>>> a31a50a56167683d5050cea0b911739819298793
 </resources>
