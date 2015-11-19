@@ -4,6 +4,8 @@
 //var chgpass = require('config/chgpass');
 var register = require('./config/register.js');
 var login = require('./config/login.js');
+var company_register = require('./config/company_reg.js');
+var company_login = require('./config/company_login.js');
 
 
 module.exports = function(app) {
@@ -15,9 +17,9 @@ module.exports = function(app) {
     });
 
 
-    app.post('/login', function (req, res) {
-        var email = req.query.email;
-        var password = req.query.password;
+    app.post('/login/:email/:pwd', function (req, res) {
+        var email = req.params.email;
+        var password = req.params.pwd;
 
         login.login(email, password, function (found) {
             console.log(found);
@@ -26,9 +28,9 @@ module.exports = function(app) {
     });
 
 
-    app.post('/register', function (req, res) {
-        var email = req.query.email;
-        var password = req.query.password;
+    app.post('/register/:email/:pwd', function (req, res) {
+        var email = req.params.email;
+        var password = req.params.pwd;
         //console.log(req);
         console.log(email + " " + password);
         register.register(email, password, function (found) {
@@ -37,6 +39,29 @@ module.exports = function(app) {
         });
     });
 
+
+    app.post('/company/register/:email/:pwd', function (req, res) {
+        //console.log("****" + req.params.email + " "+ req.params.pwd);
+        var email = req.params.email;
+        var pwd = req.params.pwd;
+        company_register.register(email, pwd, function (found) {
+            console.log("***" + found);
+            res.json(found);
+        });
+    });
+
+    app.post('/company/login/:email/:pwd', function (req, res) {
+        var email = req.params.email;
+        var pwd = req.params.pwd;
+        company_login.login(email, pwd, function (found) {
+            console.log("***" + found);
+            res.json(found);
+        });
+    });
+
+    app.post("company/add/:id/:promoname/", function(req, res){
+
+    });
 
     //app.post('/api/chgpass', function (req, res) {
     //    var id = req.body.id;

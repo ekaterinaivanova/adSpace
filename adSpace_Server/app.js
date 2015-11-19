@@ -21,16 +21,6 @@ app.use(connect.urlencoded());
 
 require('./routes/routes.js')(app);
 
-//app.post('/register',function(req,res){
-//    var email = req.body.email; // Getting the parameters
-//    var password = req.body.password;
-//
-//    register.useremail(email,password,function (found) { //Register function to perform register event
-//        console.log(found); // Prints the results in Console.(Optional)
-//        res.json(found); // Returns the result back to user in JSON format
-//    });
-//});
-
 app.listen(port);
 
 console.log('The App runs on port ' + port);

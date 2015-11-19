@@ -4,10 +4,10 @@
 var crypto = require('crypto');
 //var rand = require('csprng');
 var sql = require('../../DB/sqlDo.js');
+var settings = require("../../settings.js");
 
 exports.login = function(email,password,callback) {
-
-           sql.returnUserIfUserExists(email, function(result, error){
+           sql.returnIfExists(email, settings.tables_names.users, function(result, error){
                if(error){
                    console.log(error);
                    callback({'response':"Login Failed, intearnal error!","result":false});
@@ -24,7 +24,7 @@ exports.login = function(email,password,callback) {
                    var recieved_password = crypto.createHash('sha512').update(password).digest("hex");
                    if (hashed_password == recieved_password) {
                        callback({
-                           'response': "Login Sucess",
+                           'response': settings.messages.login_success,
                            "result": true,
                            "id": user_id,
                            'name': name,
@@ -32,7 +32,7 @@ exports.login = function(email,password,callback) {
                            'points': points
                        });
                    } else {
-                       callback({'response': "Login Failed, wrong password", "result": false});
+                       callback({'response': settings.messages.login_failed_wrong_pwd, "result": false});
                    }
                }
 
