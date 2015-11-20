@@ -4,10 +4,12 @@
 //var chgpass = require('config/chgpass');
 var register = require('./config/register.js');
 var login = require('./config/login.js');
-var company_register = require('./config/company_reg.js');
-var company_login = require('./config/company_login.js');
+//var companyRegister = require('./config/companyRegister.js');
+//var companyLogin = require('./config/companyLogin.js');
+var offers = require('./config/offers.js');
+var companies = require('./config/companies.js');
 
-
+var settings = require('../settings.js');
 module.exports = function(app) {
 
 
@@ -41,11 +43,9 @@ module.exports = function(app) {
 
 
     app.post('/company/register/:email/:pwd', function (req, res) {
-        //console.log("****" + req.params.email + " "+ req.params.pwd);
         var email = req.params.email;
         var pwd = req.params.pwd;
-        company_register.register(email, pwd, function (found) {
-            console.log("***" + found);
+        companies.register(email, pwd, function (found) {
             res.json(found);
         });
     });
@@ -53,16 +53,54 @@ module.exports = function(app) {
     app.post('/company/login/:email/:pwd', function (req, res) {
         var email = req.params.email;
         var pwd = req.params.pwd;
-        company_login.login(email, pwd, function (found) {
-            console.log("***" + found);
+        companies.login(email, pwd, function (found) {
             res.json(found);
         });
     });
+    //adds a new offer for a company with id == companyId
+    app.post("/company/add/:companyId/:offerName/:offerRules", function(req, res){
+        var companyId= req.params.companyId;
+        var offerName = req.params.offerName;
+        var offerRules = req.params.offerRules;
 
-    app.post("company/add/:id/:promoname/", function(req, res){
-
+        companies.add(companyId,offerName,offerRules, function(result){
+            console.log("***" + result);
+            res.json(result);
+        })
+    });
+    //updates company's offer. Offer id in DB equals to offerID, company id  = companyId.
+    //If offerName == null, it syays unchanged.
+    app.put("/company/update/:offerId/:companyId/:offerRules/:offerName", function(req, res){
+        var companyId= req.params.companyId;
+        var offerName = req.params.offerName;
+        var offerRules = req.params.offerRules;
+        var offerId = req.params.offerId;
+        companies.update(companyId,offerName,offerRules, offerId, function(result){
+            console.log("***" + result);
+            res.json(result);
+        })
     });
 
+    //returns all registered companies
+    app.get("/companies", function(req,res){
+        companies.getAll(function(result, err){
+            if(!err){
+                res.json(result);
+            }
+        })
+    });
+    //returns all offers of thecompany with companyID, if there is no offers returns []
+    app.get("/offers/:companyId", function(req,res){
+        var companyId = req.params.companyId;
+        offers.getAllOffersOfCompany(companyId, function(result, error){
+            if(error){
+                console.log(error);
+            }else{
+                res.json(result);
+            }
+        });
+
+    });
     //app.post('/api/chgpass', function (req, res) {
     //    var id = req.body.id;
     //    var opass = req.body.oldpass;
@@ -85,15 +123,4 @@ module.exports = function(app) {
     //    });
     //});
 
-    //app.post('/api/resetpass/chg', function(req, res) {
-    //
-    //    var email = req.body.email;
-    //    var code = req.body.code;
-    //    var npass = req.body.newpass;
-    //
-    //    chgpass.respass_chg(email,code,npass,function(found){
-    //        console.log(found);
-    //        res.json(found);
-    //    });
-    //});
 };

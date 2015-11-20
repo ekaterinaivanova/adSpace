@@ -1,49 +1,8 @@
-
+var settings = require("../settings.js");
 var sql = require("./sqlDB.js");
 
-var registerNewUser = function(email, password, callback){
-    returnUserIfUserExists(email, function(res, err){
-        if(err){
-            console.log("Error appeared " + err);
-        }else{
-            if(res == null){
-                //register a new user
-                var query = "INSERT INTO users_adspace (email, password) VALUES (?, ?);";
-                var insert = [email, password];
-                sql.exacuteQueryWithArgs(query, insert, function(result, error){
-                    if(error){
-                        console.log(error);
-                        throw  error
-                    }else{
-                        console.log(result.insertId);
-                        return callback("AOK");
-                    }
-                });
-            }else{
-                return(callback("NOK"));
-            }
-        }
-    })
-};
 
-
-//Check if user with email exists
-//if exists return pwd and id_user
-//else return null
-var returnUserIfUserExists = function(email, callback){
-    var query = 'SELECT * from users_adspace where email Like ?';
-    var insert = [email];
-    sql.exacuteQueryWithArgs(query, insert, function(result, error){
-        console.log("Were found " + result.length +" rows.");
-        if(result.length < 1){
-            return callback(null);
-        }else{
-            return callback(result);
-        }
-    });
-};
-
-//Check if user with email exists
+//Check if user/company with email exists
 //if exists return pwd and id_user
 //else return null
 var returnIfExists = function(email, who, callback){
@@ -68,9 +27,9 @@ var registerNew = function(email, password, where, callback){
                 //register a new user
                 var query = "INSERT INTO "+ where +" (email, password) VALUES (?, ?);";
                 var insert = [email, password];
-                sql.exacuteQueryWithArgs(query, insert, function(result, error){
+                sql.exacuteQueryWithArgs(query, insert, function(error, result){
                     if(error){
-                        console.log(error);
+                        console.log(error + "****");
                         //throw  error
                     }else{
                         console.log(result.insertId);
@@ -83,9 +42,78 @@ var registerNew = function(email, password, where, callback){
         }
     })
 };
-//TODO implement promo add logic
+var addPromo = function(companyId, offerName, offerRules, callback){
+    var query = "INSERT INTO "+ settings.tables_names.offers + " (company_id, name, rules) VALUES (?, ?, ?);";
+    var insert = [companyId, offerName, offerRules];
+    sql.exacuteQueryWithArgs(query,insert, function(res, err){
+        if(err){
+            console.log(err);
+        }else{
+            console.log(res.insertId);
+            if(res.insertId != null){
+                return callback({status:"AOK", offerId: res.insertId});
+            }else{
+                return callback({status: "NOK"});
+            }
 
-//module.exports.registerNewUser=registerNewUser;
-module.exports.returnUserIfUserExists=returnUserIfUserExists;
+        }
+    });
+};
+
+//updates promotion info
+// if string for offerName == "null" name will not be updated
+var updatePromo = function(companyId,  offerName, offerRules, offerId, callback){
+    var query =     "UPDATE " + settings.tables_names.offers + " SET name = ?, rules = ?  WHERE id=? and company_id = ?;";
+    var insert = [offerName, offerRules, offerId, companyId];
+    if( offerName == "null") {
+         query = "UPDATE " + settings.tables_names.offers + " SET  rules = ?  WHERE id=? and company_id = ?;";
+         insert = [offerRules, offerId, companyId];
+    }
+    sql.exacuteQueryWithArgs(query,insert, function(res, err){
+        if(err){
+            console.log(err);
+        }else{
+            console.log("We changed " + res.changedRows + " rows.");
+            if(res.changedRows > 0){
+                console.log("1.We changed " + res.changedRows + " rows.");
+                return callback({status:"AOK"});
+            }else{
+                console.log("0.We changed " + res.changedRows + " rows.");
+
+                return callback({status: "NOK"});
+            }
+
+        }
+    });
+};
+
+var getAllCompanies= function(callback){
+    var query = "SELECT id, name, address, email FROM " + settings.tables_names.company;
+    sql.exacuteQuery(query, function(res, err){
+       if(err){
+           console.log(err);
+       }else{
+           var jsonRes = JSON.stringify(res);
+           console.log(jsonRes);
+            callback(res);
+       }
+    });
+};
+var getCompanysOffers= function(companyId, callback){
+    var query = "SELECT id, name, rules  FROM " + settings.tables_names.offers + " WHERE company_id = " + companyId ;
+    sql.exacuteQuery(query, function(res, err){
+        if(err){
+            console.log(err);
+        }else{
+            callback(res);
+        }
+    });
+};
+
+
+module.exports.getCompanysOffers = getCompanysOffers;
+module.exports.getAllCompanies = getAllCompanies;
 module.exports.registerNew=registerNew;
 module.exports.returnIfExists = returnIfExists;
+module.exports.addPromo = addPromo;
+module.exports.updatePromo = updatePromo;

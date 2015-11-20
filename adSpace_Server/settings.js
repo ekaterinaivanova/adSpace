@@ -12,7 +12,8 @@ exports.sqlSettings = {
 exports.port = 8080;
 exports.tables_names = {
     users : 'users_adspace',
-    company: 'company'
+    company: 'company',
+    offers: 'offers'
 };
 exports.messages = {
     company_login_failed : "Login failed. Email does not exists",
@@ -21,5 +22,9 @@ exports.messages = {
     login_failed_internal_error: "Login Failed, intearnal error!",
     reg_success:"Registration Sucess",
     reg_failed: "Registration failed",
-    reg_failed_wrong_email_format: "Registration Failed, wrong email format"
+    reg_failed_wrong_email_format: "Registration Failed, wrong email format",
+    company_add_success: "Offer was added successfully!",
+    company_update_success: "Offer was updated successfully!",
+    error: "An error has occurred!",
+    update_offer_failed: "We couldn't update the offer. It doesn't exists or you don't have access to it!"
 };
