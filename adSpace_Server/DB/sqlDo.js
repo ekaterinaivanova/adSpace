@@ -10,11 +10,15 @@ var returnIfExists = function(email, who, callback){
     var insert = [email];
     console.log(query);
     sql.exacuteQueryWithArgs(query, insert, function(result, error){
+        if(error){
+            console.log(error)
+        }else{
         console.log("Were found " + result.length +" rows.");
         if(result.length < 1){
             return callback(null);
         }else{
             return callback(result);
+        }
         }
     });
 };
@@ -27,7 +31,7 @@ var registerNew = function(email, password, where, callback){
                 //register a new user
                 var query = "INSERT INTO "+ where +" (email, password) VALUES (?, ?);";
                 var insert = [email, password];
-                sql.exacuteQueryWithArgs(query, insert, function(error, result){
+                sql.exacuteQueryWithArgs(query, insert, function(result,error){
                     if(error){
                         console.log(error + "****");
                         //throw  error
@@ -42,6 +46,7 @@ var registerNew = function(email, password, where, callback){
         }
     })
 };
+
 var addPromo = function(companyId, offerName, offerRules, callback){
     var query = "INSERT INTO "+ settings.tables_names.offers + " (company_id, name, rules) VALUES (?, ?, ?);";
     var insert = [companyId, offerName, offerRules];
@@ -110,10 +115,42 @@ var getCompanysOffers= function(companyId, callback){
     });
 };
 
+var updateCompany = function(email, pwd, name, address, callback){
+    returnIfExists(email,settings.tables_names.company,function(result, error){
+        if(error){
+            console.log(error);
+        }else{
+            password = result[0].password;
+            //check pwd match
+            if(password != pwd){
 
+                callback({status:"WP"}); //wrong password
+            }else{
+                var id = result[0].id;
+                var query =     "UPDATE " + settings.tables_names.company + " SET name = ?, address = ?  WHERE id=?;";
+                var insert = [name, address, id];
+                sql.exacuteQueryWithArgs(query, insert, function(res, err){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        console.log(res.changedRows);
+                        if(res.changedRows > 0){
+                            callback({  status:"AOK"});
+                        }else{
+                            callback({status:"NOK"});//Something went wrong
+                        }
+                    }
+                })
+            }
+            //console.log(result[0].password);
+        }
+    })
+
+};
 module.exports.getCompanysOffers = getCompanysOffers;
 module.exports.getAllCompanies = getAllCompanies;
 module.exports.registerNew=registerNew;
 module.exports.returnIfExists = returnIfExists;
 module.exports.addPromo = addPromo;
 module.exports.updatePromo = updatePromo;
+module.exports.updateCompany = updateCompany;

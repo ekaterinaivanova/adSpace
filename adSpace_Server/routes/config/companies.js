@@ -12,7 +12,37 @@ exports.getAll = function(callback){
         if(!err)
             callback(res);
     } );
+    //email:email,
+    //    name:name,
+    //    address:address
+};
+exports.updateCompany = function(email, pwd, name, address,callback){
+    var hashed_password = crypto.createHash('sha512').update(pwd).digest("hex");
+    sql.updateCompany(email, hashed_password, name, address, function(result, error){
+        if(error){
+            console.log(error)
+        }else{
+            if(result.status == "AOK"){
+                callback({  result: true,
+                            response: settings.messages.company_update_success,
+                            email:email,
+                            name:name,
+                            address:address
+                })
+            }else if(result.status == "NOK"){
+                callback({
+                    result: false,
+                    response:settings.messages.company_update_failed //DB error
 
+                })
+            }else{
+                callback({
+                    result: false,
+                    response:settings.messages.company_update_access_failed //Wrong pwd
+                })
+            }
+        }
+    })
 };
 exports.add = function(companyId, offerName, offerRules, callback){
     sql.addPromo(companyId, offerName, offerRules, function(res, err){

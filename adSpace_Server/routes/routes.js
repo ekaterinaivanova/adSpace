@@ -49,7 +49,17 @@ module.exports = function(app) {
             res.json(found);
         });
     });
+    //adds company name and address
+    app.put('/company/update/:email/:pwd/:name/:address', function (req, res) {
+        var email = req.params.email;
+        var pwd = req.params.pwd;
+        var name = req.params.name;
+        var address = req.params.address;
 
+        companies.updateCompany(email, pwd, name, address, function (found) {
+            res.json(found);
+        });
+    });
     app.post('/company/login/:email/:pwd', function (req, res) {
         var email = req.params.email;
         var pwd = req.params.pwd;
