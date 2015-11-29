@@ -24,6 +24,9 @@ exports.messages = {
     reg_failed: "Registration failed",
     reg_failed_wrong_email_format: "Registration Failed, wrong email format",
     company_add_success: "Offer was added successfully!",
+    company_already_exists: "Company Already exists!",
+    user_already_exists: "User Already exists!",
+
     company_update_success: "Company was updated successfully!",
     company_update_failed:"Company update wasn't  successful!",
     company_update_access_failed:"Company update wasn't  successful! You are not allowed to update the  account",

@@ -17,6 +17,7 @@ var returnIfExists = function(email, who, callback){
         if(result.length < 1){
             return callback(null);
         }else{
+
             return callback(result);
         }
         }
@@ -34,14 +35,14 @@ var registerNew = function(email, password, where, callback){
                 sql.exacuteQueryWithArgs(query, insert, function(result,error){
                     if(error){
                         console.log(error + "****");
-                        //throw  error
+                        return callback("NOK");
                     }else{
                         console.log(result.insertId);
                         return callback("AOK");
                     }
                 });
             }else{
-                return(callback("NOK"));
+                return(callback("UAE"));
             }
         }
     })
@@ -114,12 +115,40 @@ var getCompanysOffers= function(companyId, callback){
         }
     });
 };
+var registerCompanyWithNameAndAddress = function(email, pwd, name, address, callback){
+    returnIfExists(email,settings.tables_names.company,function(result, error){
+            if(result == null){
+                var query = "INSERT INTO "+ settings.tables_names.company +" (email, password, name, address) VALUES (?, ?,?,?);";
+                var insert = [email, pwd, name, address];
+                sql.exacuteQueryWithArgs(query, insert, function(res, err){
+                    if(err){
+                        console.log("error 127");
 
+                        console.log(error);
+                        callback({status:"NOK"});
+                    }else{
+                        console.log("res 132");
+                        console.log(res);
+                        if(res.insertId != null){
+                            return callback({status:"AOK", companyId: res.insertId});
+                        }
+                    }
+                })
+            }else{
+                console.log("result 139");
+
+                console.log(result);
+                callback({status: "UAE"}); //user already exists
+            }
+    });
+
+    };
 var updateCompany = function(email, pwd, name, address, callback){
     returnIfExists(email,settings.tables_names.company,function(result, error){
         if(error){
             console.log(error);
-        }else{
+            callback({status:"NOK"});//Something went wrong
+        }else if(result!= null){
             password = result[0].password;
             //check pwd match
             if(password != pwd){
@@ -143,10 +172,13 @@ var updateCompany = function(email, pwd, name, address, callback){
                 })
             }
             //console.log(result[0].password);
+        }else{
+            callback({status:"NOK"});//Something went wrong
         }
     })
 
 };
+module.exports.registerCompanyWithNameAndAddress = registerCompanyWithNameAndAddress;
 module.exports.getCompanysOffers = getCompanysOffers;
 module.exports.getAllCompanies = getAllCompanies;
 module.exports.registerNew=registerNew;

@@ -24,9 +24,11 @@ exports.register = function(email, password, callback) {
                 //else if NOK user already have an account
                 if (result == "AOK") {
                     return callback({'response': settings.messages.reg_success, "result": true});
-                } else{
-                return callback({'response':  settings.messages.reg_failed, "result": false});
-            }
+                } else if(result == "UAE"){
+                    return callback({'response': settings.messages.user_already_exists, "result": false});
+                }else{
+                    return callback({'response':  settings.messages.reg_failed, "result": false});
+                 }
             }
         });
     }else{

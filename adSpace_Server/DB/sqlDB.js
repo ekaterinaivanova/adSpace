@@ -35,8 +35,11 @@ var exacuteQueryWithArgs = function(sqlQuerry, data,  callback){
                 if (error){
                     console.log(error );
                     //throw error;
+                }else{
+                    console.log("result DB 39")
+                    console.log(result);
+                    return callback(result);
                 }
-                return callback(result);
             });
             connection.release();
             console.log("updateUserLogOnDisconect conection id " + connection.threadId+ " has been released!");

@@ -49,6 +49,18 @@ module.exports = function(app) {
             res.json(found);
         });
     });
+    app.post('/company/register/:email/:pwd/:name/:address', function (req, res) {
+        console.log("***** MUUUU");
+        var email = req.params.email;
+        var pwd = req.params.pwd;
+        var name = req.params.name;
+        var address = req.params.address;
+        companies.registerCompanyWithNameAndAddress(email, pwd,name, address, function (found) {
+            console.log("found");
+            console.log(found);
+            res.json(found);
+        });
+    });
     //adds company name and address
     app.put('/company/update/:email/:pwd/:name/:address', function (req, res) {
         var email = req.params.email;

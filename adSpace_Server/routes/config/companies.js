@@ -12,9 +12,40 @@ exports.getAll = function(callback){
         if(!err)
             callback(res);
     } );
-    //email:email,
-    //    name:name,
-    //    address:address
+
+};
+exports.registerCompanyWithNameAndAddress = function(email, pwd, name, address,callback){
+    var hashed_password = crypto.createHash('sha512').update(pwd).digest("hex");
+    sql.registerCompanyWithNameAndAddress(email, hashed_password, name, address, function(result, error){
+        console.log(result);
+        console.log("***********");
+                if(error){
+                    console.log(error);
+                    callback({
+                        status:false,
+                        response: settings.messages.error})
+                }else{
+                    if(result.status == "AOK"){
+                        callback({
+                            status:true,
+                            response:settings.messages.reg_success,
+                            email:email,
+                            address:address,
+                            name:name
+                        })
+                    }else if(result.status == "UAE"){
+                        //User already exsists
+                        callback({
+                            status:false,
+                            response: settings.messages.company_already_exists})
+                    }else{
+                        //reg failed
+                        callback({
+                            status:false,
+                            response: settings.messages.reg_failed})
+                    }
+                }
+    });
 };
 exports.updateCompany = function(email, pwd, name, address,callback){
     var hashed_password = crypto.createHash('sha512').update(pwd).digest("hex");
@@ -44,6 +75,7 @@ exports.updateCompany = function(email, pwd, name, address,callback){
         }
     })
 };
+//add offer
 exports.add = function(companyId, offerName, offerRules, callback){
     sql.addPromo(companyId, offerName, offerRules, function(res, err){
         if(err){
@@ -55,13 +87,13 @@ exports.add = function(companyId, offerName, offerRules, callback){
                     "result": true,
                     "offer_id":res.offerId,
                     'name': offerName,
-                    'rules': offerRules,
+                    'rules': offerRules
                 });
             }
         }
-    } );
-
+    });
 };
+//update offer
 exports.update = function(companyId, offerName, offerRules, offerId, callback){
     sql.updatePromo(companyId, offerName, offerRules, offerId, function(res, err){
         if(err){
@@ -136,8 +168,14 @@ exports.register = function(email, password, callback) {
                 //if result AOK user has been registered
                 //else if NOK user already have an account
                 if (result == "AOK") {
-                    return callback({'response': settings.messages.reg_success, "result": true});
-                } else{
+                    return callback({
+                        'response': settings.messages.reg_success,
+                        "result": true,
+                        email:email
+                    });
+                } else if(result == "UAE"){
+                    return callback({'response': settings.messages.company_already_exists, "result": false});
+                }else{
                     return callback({'response': settings.messages.reg_failed, "result": false});
                 }
             }
