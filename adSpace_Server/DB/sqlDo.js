@@ -23,6 +23,25 @@ var returnIfExists = function(email, who, callback){
         }
     });
 };
+
+var returnPromoIfExists = function(id, callback){
+    var query = 'SELECT  * from offers  where id = ?';
+    var insert = [id];
+    console.log(query);
+    sql.exacuteQueryWithArgs(query, insert, function(result, error){
+        if(error){
+            console.log(error)
+        }else{
+            console.log("Were found " + result.length +" rows.");
+            if(result.length < 1){
+                return callback(null);
+            }else{
+
+                return callback(result);
+            }
+        }
+    });
+};
 var registerNew = function(email, password, where, callback){
     returnIfExists(email, where, function(res, err){
         if(err){
@@ -48,9 +67,9 @@ var registerNew = function(email, password, where, callback){
     })
 };
 
-var addPromo = function(companyId, offerName, offerRules, callback){
-    var query = "INSERT INTO "+ settings.tables_names.offers + " (company_id, name, rules) VALUES (?, ?, ?);";
-    var insert = [companyId, offerName, offerRules];
+var addPromo = function(companyId, offerName, offerRules,hashtag, callback){
+    var query = "INSERT INTO "+ settings.tables_names.offers + " (company_id, name, rules, hashtags) VALUES (?, ?, ?,?);";
+    var insert = [companyId, offerName, offerRules,hashtag];
     sql.exacuteQueryWithArgs(query,insert, function(res, err){
         if(err){
             console.log(err);
@@ -68,12 +87,12 @@ var addPromo = function(companyId, offerName, offerRules, callback){
 
 //updates promotion info
 // if string for offerName == "null" name will not be updated
-var updatePromo = function(companyId,  offerName, offerRules, offerId, callback){
-    var query =     "UPDATE " + settings.tables_names.offers + " SET name = ?, rules = ?  WHERE id=? and company_id = ?;";
-    var insert = [offerName, offerRules, offerId, companyId];
+var updatePromo = function(companyId,  offerName, offerRules, offerId,hashtag, callback){
+    var query =     "UPDATE " + settings.tables_names.offers + " SET name = ?, rules = ?, hashtags = ? WHERE id=? and company_id = ?;";
+    var insert = [offerName, offerRules,hashtag, offerId, companyId];
     if( offerName == "null") {
-         query = "UPDATE " + settings.tables_names.offers + " SET  rules = ?  WHERE id=? and company_id = ?;";
-         insert = [offerRules, offerId, companyId];
+         query = "UPDATE " + settings.tables_names.offers + " SET  rules = ?,  hashtags = ? WHERE id=? and company_id = ?;";
+         insert = [offerRules,hashtag, offerId, companyId];
     }
     sql.exacuteQueryWithArgs(query,insert, function(res, err){
         if(err){
@@ -178,6 +197,42 @@ var updateCompany = function(email, pwd, name, address, callback){
     })
 
 };
+var addOfferToUser = function(userEmail,offerId, callback){
+    returnPromoIfExists(offerId, function(result, error){
+        if(!error && result != null){
+            returnIfExists(userEmail, settings.tables_names.users,function(res, err){
+                if(!err && res!=null){
+                    var userId = res[0].user_id;
+                    query = "INSERT into " + settings.tables_names.user_offers + " (user_ID, offer_ID) VALUES(?,?);";
+                    values = [userId, offerId];
+                    sql.exacuteQueryWithArgs(query, values, function(result, error){
+                        if(error){
+                            callback({result:false,
+                            response:settings.messages.error})
+                        }else{
+                            callback({result:true})
+                        }
+                    })
+                }
+            })
+        }
+    })
+};
+var getUserOffers= function(userEmail, callback){
+    returnIfExists(userEmail, settings.tables_names.users,function(res, err){
+        if(!err && res!=null) {
+            var value = [res[0].user_id];
+            var query = " SELECT * FROM " + settings.tables_names.offers + " WHERE id IN (SELECT DISTINCT(offer_ID) FROM " + settings.tables_names.user_offers + " WHERE user_id = ? );"
+            sql.exacuteQueryWithArgs(query, value, function(result, error){
+                if(!error){
+                    callback(result);
+                }
+            })
+        }
+    })
+};
+module.exports.getUserOffers = getUserOffers;
+module.exports.addOfferToUser =  addOfferToUser;
 module.exports.registerCompanyWithNameAndAddress = registerCompanyWithNameAndAddress;
 module.exports.getCompanysOffers = getCompanysOffers;
 module.exports.getAllCompanies = getAllCompanies;

@@ -76,8 +76,8 @@ exports.updateCompany = function(email, pwd, name, address,callback){
     })
 };
 //add offer
-exports.add = function(companyId, offerName, offerRules, callback){
-    sql.addPromo(companyId, offerName, offerRules, function(res, err){
+exports.add = function(companyId, offerName, offerRules,hashtag, callback){
+    sql.addPromo(companyId, offerName, offerRules, hashtag, function(res, err){
         if(err){
             console.log(err);
         }else{
@@ -87,15 +87,16 @@ exports.add = function(companyId, offerName, offerRules, callback){
                     "result": true,
                     "offer_id":res.offerId,
                     'name': offerName,
-                    'rules': offerRules
+                    'rules': offerRules,
+                    hashtag:hashtag
                 });
             }
         }
     });
 };
 //update offer
-exports.update = function(companyId, offerName, offerRules, offerId, callback){
-    sql.updatePromo(companyId, offerName, offerRules, offerId, function(res, err){
+exports.update = function(companyId, offerName, offerRules, offerId,hashtag, callback){
+    sql.updatePromo(companyId, offerName, offerRules, offerId,hashtag, function(res, err){
         if(err){
             console.log(err);
         }else{
@@ -106,6 +107,7 @@ exports.update = function(companyId, offerName, offerRules, offerId, callback){
                     "offer_id":offerId,
                     'name': offerName,
                     'rules': offerRules,
+                    hashtag:hashtag
                 });
             }else{
                 callback({

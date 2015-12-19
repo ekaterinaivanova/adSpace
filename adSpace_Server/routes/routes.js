@@ -2,14 +2,15 @@
  * Created by EkaterinaAcc on 07-Nov-15.
  */
 //var chgpass = require('config/chgpass');
-var register = require('./config/register.js');
-var login = require('./config/login.js');
+//var register = require('./config/register.js');
+//var login = require('./config/login.js');
+var user = require('./config/user.js');
 //var companyRegister = require('./config/companyRegister.js');
 //var companyLogin = require('./config/companyLogin.js');
 var offers = require('./config/offers.js');
 var companies = require('./config/companies.js');
 
-var settings = require('../settings.js');
+//var settings = require('../settings.js');
 module.exports = function(app) {
 
 
@@ -23,7 +24,7 @@ module.exports = function(app) {
         var email = req.params.email;
         var password = req.params.pwd;
 
-        login.login(email, password, function (found) {
+        user.login(email, password, function (found) {
             console.log(found);
             res.json(found);
         });
@@ -31,14 +32,21 @@ module.exports = function(app) {
 
 
     app.post('/register/:email/:pwd', function (req, res) {
+        console.log(req);
         var email = req.params.email;
         var password = req.params.pwd;
         //console.log(req);
         console.log(email + " " + password);
-        register.register(email, password, function (found) {
+        user.register(email, password, function (found) {
             console.log(found);
             res.json(found);
         });
+    });
+    app.post('/register', function (req, res) {
+        console.log(req.params);
+        console.log(req.body);
+
+
     });
 
 
@@ -80,24 +88,28 @@ module.exports = function(app) {
         });
     });
     //adds a new offer for a company with id == companyId
-    app.post("/company/add/:companyId/:offerName/:offerRules", function(req, res){
+    app.post("/company/add/:companyId/:offerName/:offerRules/:hashtag", function(req, res){
         var companyId= req.params.companyId;
         var offerName = req.params.offerName;
         var offerRules = req.params.offerRules;
+        var hashtag = req.params.hashtag;
 
-        companies.add(companyId,offerName,offerRules, function(result){
+        companies.add(companyId,offerName,offerRules, hashtag, function(result){
             console.log("***" + result);
             res.json(result);
         })
     });
     //updates company's offer. Offer id in DB equals to offerID, company id  = companyId.
     //If offerName == null, it syays unchanged.
-    app.put("/company/update/:offerId/:companyId/:offerRules/:offerName", function(req, res){
+    //
+    app.put("/company/updateoffer/:offerId/:companyId/:offerRules/:offerName/:hashtag", function(req, res){
         var companyId= req.params.companyId;
         var offerName = req.params.offerName;
         var offerRules = req.params.offerRules;
         var offerId = req.params.offerId;
-        companies.update(companyId,offerName,offerRules, offerId, function(result){
+        var hashtag = req.params.hashtag;
+        console.log(hashtag);
+        companies.update(companyId,offerName,offerRules, offerId, hashtag, function(result){
             console.log("***" + result);
             res.json(result);
         })
@@ -121,9 +133,31 @@ module.exports = function(app) {
                 res.json(result);
             }
         });
-
     });
-    //app.post('/api/chgpass', function (req, res) {
+
+    app.post('/newpromo/:email/:offerId', function (req, res) {
+        var email = req.params.email;
+        var offerId = req.params.offerId;
+        user.addOfferToUser(email, offerId, function(result, error){
+            if(error){
+                res.json({result:false})
+            }else{
+                res.json(result);
+            }
+        })
+    });
+    //get all user promos
+    app.get('/allpromos/:email', function (req, res) {
+        var email = req.params.email;
+        user.getUserOffers(email, function(result, error){
+            if(error){
+                res.json({result:false})
+            }else{
+                res.json(result);
+            }
+        })
+    });
+     //app.post('/api/chgpass', function (req, res) {
     //    var id = req.body.id;
     //    var opass = req.body.oldpass;
     //    var npass = req.body.newpass;

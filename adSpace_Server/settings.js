@@ -13,7 +13,9 @@ exports.port = 8080;
 exports.tables_names = {
     users : 'users_adspace',
     company: 'company',
-    offers: 'offers'
+    offers: 'offers',
+    user_offers: 'user_offers'
+
 };
 exports.messages = {
     company_login_failed : "Login failed. Email does not exists",

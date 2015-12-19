@@ -6,9 +6,9 @@
  */
 var express  = require('express');
 var connect = require('connect');
-var app      = express();
+var app  = express();
 var settings = require("./settings.js");
-var port     = process.env.PORT || settings.port;
+var port  = process.env.PORT || settings.port;
 
 // Configuration
 app.use(express.static(__dirname + '/public'));
