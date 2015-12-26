@@ -88,28 +88,37 @@ module.exports = function(app) {
         });
     });
     //adds a new offer for a company with id == companyId
-    app.post("/company/add/:companyId/:offerName/:offerRules/:hashtag", function(req, res){
+    //localhost:8080/company/add/1/Amazing name offer/Super rule/@mama@mamm/SuperPrize/26-Dec-15/14-Jan-16/Hohohoh
+    app.post("/company/add/:companyId/:offerName/:offerRules/:hashtag/:prize/:start/:finish/:extra", function(req, res){
         var companyId= req.params.companyId;
         var offerName = req.params.offerName;
         var offerRules = req.params.offerRules;
         var hashtag = req.params.hashtag;
+        var prize =  req.params.prize;
+        var start =  req.params.start;
+        var finish =  req.params.finish;
+        var extra =  req.params.extra;
 
-        companies.add(companyId,offerName,offerRules, hashtag, function(result){
-            console.log("***" + result);
+        companies.add(companyId,offerName,offerRules, hashtag,prize, start, finish, extra, function(result){
+            //console.log("***" + result);
             res.json(result);
         })
     });
     //updates company's offer. Offer id in DB equals to offerID, company id  = companyId.
     //If offerName == null, it syays unchanged.
-    //
-    app.put("/company/updateoffer/:offerId/:companyId/:offerRules/:offerName/:hashtag", function(req, res){
+    //localhost:8080/company/updateoffer/9/1/Super rule/Super name/@super@puper/SuperPrize/26-Dec-15/14-Jan-16/Hohohoh
+    app.put("/company/updateoffer/:offerId/:companyId/:offerRules/:offerName/:hashtag/:prize/:start/:finish/:extra", function(req, res){
         var companyId= req.params.companyId;
         var offerName = req.params.offerName;
         var offerRules = req.params.offerRules;
         var offerId = req.params.offerId;
         var hashtag = req.params.hashtag;
-        console.log(hashtag);
-        companies.update(companyId,offerName,offerRules, offerId, hashtag, function(result){
+        var prize =  req.params.prize;
+        var start =  req.params.start;
+        var finish =  req.params.finish;
+        var extra =  req.params.extra;
+
+        companies.update(companyId,offerName,offerRules, offerId, hashtag,prize, start, finish, extra, function(result){
             console.log("***" + result);
             res.json(result);
         })
@@ -134,7 +143,7 @@ module.exports = function(app) {
             }
         });
     });
-
+    //adds offer with the selected offer id to user
     app.post('/newpromo/:email/:offerId', function (req, res) {
         var email = req.params.email;
         var offerId = req.params.offerId;

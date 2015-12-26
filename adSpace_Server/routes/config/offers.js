@@ -3,16 +3,32 @@
  */
 var sql = require('../../DB/sqlDo.js');
 var settings = require("../../settings.js");
-
+var dateFormat = require('dateformat');
 
 exports.getAllOffersOfCompany = function(companyId, callback){
     sql.getCompanysOffers(companyId, function(res, err){
         if(!err) {
-            callback(res, null);
+
+
+
+            for(var i = 0; i < res.length; i++){
+                var start=dateFormat(res[i].start, "dd-mmm-yy");
+                console.log(start);
+                res[i].start = start;
+                var finish=dateFormat(res[i].finish, "dd-mmm-yy");
+                res[i].finish = finish;
+            }
+
+
+            callback({
+                data:res,
+                result:true});
         }else{
             console.log(err);
-            //callback(null, err);
+           callback({
+               result:false,
+               response:settings.messages.error
+           })
         }
     });
-
 };

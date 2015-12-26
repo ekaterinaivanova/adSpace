@@ -67,9 +67,9 @@ var registerNew = function(email, password, where, callback){
     })
 };
 
-var addPromo = function(companyId, offerName, offerRules,hashtag, callback){
-    var query = "INSERT INTO "+ settings.tables_names.offers + " (company_id, name, rules, hashtags) VALUES (?, ?, ?,?);";
-    var insert = [companyId, offerName, offerRules,hashtag];
+var addPromo = function(companyId, offerName, offerRules,hashtag,prize,start, finish, extra, callback){
+    var query = "INSERT INTO "+ settings.tables_names.offers + " (company_id, name, rules, hashtags, prize,start, finish, extra) VALUES (?, ?, ?,?,?,?,?,?);";
+    var insert = [companyId, offerName, offerRules,hashtag, prize,start, finish, extra];
     sql.exacuteQueryWithArgs(query,insert, function(res, err){
         if(err){
             console.log(err);
@@ -87,12 +87,12 @@ var addPromo = function(companyId, offerName, offerRules,hashtag, callback){
 
 //updates promotion info
 // if string for offerName == "null" name will not be updated
-var updatePromo = function(companyId,  offerName, offerRules, offerId,hashtag, callback){
-    var query =     "UPDATE " + settings.tables_names.offers + " SET name = ?, rules = ?, hashtags = ? WHERE id=? and company_id = ?;";
-    var insert = [offerName, offerRules,hashtag, offerId, companyId];
+var updatePromo = function(companyId,  offerName, offerRules, offerId,hashtag,prize,start, finish, extra, callback){
+    var query =     "UPDATE " + settings.tables_names.offers + " SET name = ?, rules = ?, hashtags = ? ,prize = ?,start = ?, finish = ?, extra = ? WHERE id=? and company_id = ? ;";
+    var insert = [offerName, offerRules,hashtag,prize,start, finish, extra, offerId, companyId];
     if( offerName == "null") {
-         query = "UPDATE " + settings.tables_names.offers + " SET  rules = ?,  hashtags = ? WHERE id=? and company_id = ?;";
-         insert = [offerRules,hashtag, offerId, companyId];
+         query = "UPDATE " + settings.tables_names.offers + " SET  rules = ?,  hashtags = ? ,prize = ?,start = ?, finish = ?, extra = ? WHERE id=? and company_id = ?;";
+         insert = [offerRules,hashtag,prize,start, finish, extra, offerId, companyId];
     }
     sql.exacuteQueryWithArgs(query,insert, function(res, err){
         if(err){
@@ -125,7 +125,7 @@ var getAllCompanies= function(callback){
     });
 };
 var getCompanysOffers= function(companyId, callback){
-    var query = "SELECT id, name, rules  FROM " + settings.tables_names.offers + " WHERE company_id = " + companyId ;
+    var query = "SELECT *  FROM " + settings.tables_names.offers + " WHERE company_id = " + companyId ;
     sql.exacuteQuery(query, function(res, err){
         if(err){
             console.log(err);

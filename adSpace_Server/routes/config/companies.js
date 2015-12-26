@@ -76,27 +76,38 @@ exports.updateCompany = function(email, pwd, name, address,callback){
     })
 };
 //add offer
-exports.add = function(companyId, offerName, offerRules,hashtag, callback){
-    sql.addPromo(companyId, offerName, offerRules, hashtag, function(res, err){
-        if(err){
-            console.log(err);
-        }else{
-            if(res.status == "AOK"){
-                callback({
-                    'response': settings.messages.company_add_success,
-                    "result": true,
-                    "offer_id":res.offerId,
-                    'name': offerName,
-                    'rules': offerRules,
-                    hashtag:hashtag
-                });
+exports.add = function(companyId, offerName, offerRules,hashtag,prize,start, finish, extra, callback){
+    if(Date.parse(start) >= Date.parse(finish)){
+        callback({
+            result:false,
+            response:settings.messages.wrongDates
+        })
+    }else{
+        sql.addPromo(companyId, offerName, offerRules, hashtag,prize,start, finish, extra, function(res, err){
+            if(err){
+                console.log(err);
+            }else{
+                if(res.status == "AOK"){
+                    callback({
+                        'response': settings.messages.company_add_success,
+                        "result": true,
+                        "offer_id":res.offerId,
+                        'name': offerName,
+                        'rules': offerRules,
+                        prize:prize,
+                        hashtag:hashtag,
+                        start:start,
+                        finish:finish,
+                        extra:extra
+                    });
+                }
             }
-        }
-    });
+        });
+    }
 };
 //update offer
-exports.update = function(companyId, offerName, offerRules, offerId,hashtag, callback){
-    sql.updatePromo(companyId, offerName, offerRules, offerId,hashtag, function(res, err){
+exports.update = function(companyId, offerName, offerRules, offerId,hashtag,prize,start, finish, extra, callback){
+    sql.updatePromo(companyId, offerName, offerRules, offerId,hashtag,prize,start, finish, extra, function(res, err){
         if(err){
             console.log(err);
         }else{
@@ -107,7 +118,10 @@ exports.update = function(companyId, offerName, offerRules, offerId,hashtag, cal
                     "offer_id":offerId,
                     'name': offerName,
                     'rules': offerRules,
-                    hashtag:hashtag
+                    hashtag:hashtag,
+                    start:start,
+                    finish:finish,
+                    extra:extra
                 });
             }else{
                 callback({
