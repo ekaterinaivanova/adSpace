@@ -22,12 +22,12 @@ exports.registerCompanyWithNameAndAddress = function(email, pwd, name, address,c
                 if(error){
                     console.log(error);
                     callback({
-                        status:false,
+                        result:false,
                         response: settings.messages.error})
                 }else{
                     if(result.status == "AOK"){
                         callback({
-                            status:true,
+                            result:true,
                             response:settings.messages.reg_success,
                             email:email,
                             address:address,
@@ -36,12 +36,12 @@ exports.registerCompanyWithNameAndAddress = function(email, pwd, name, address,c
                     }else if(result.status == "UAE"){
                         //User already exsists
                         callback({
-                            status:false,
+                            result:false,
                             response: settings.messages.company_already_exists})
                     }else{
                         //reg failed
                         callback({
-                            status:false,
+                            result:false,
                             response: settings.messages.reg_failed})
                     }
                 }

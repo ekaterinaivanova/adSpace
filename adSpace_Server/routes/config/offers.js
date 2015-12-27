@@ -8,9 +8,6 @@ var dateFormat = require('dateformat');
 exports.getAllOffersOfCompany = function(companyId, callback){
     sql.getCompanysOffers(companyId, function(res, err){
         if(!err) {
-
-
-
             for(var i = 0; i < res.length; i++){
                 var start=dateFormat(res[i].start, "dd-mmm-yy");
                 console.log(start);
