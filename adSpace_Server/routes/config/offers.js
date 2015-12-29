@@ -29,3 +29,22 @@ exports.getAllOffersOfCompany = function(companyId, callback){
         }
     });
 };
+
+exports.getOneOffer = function(callback){
+    sql.getOneOffer(function(res, err){
+        if(!err){
+            var start=dateFormat(res[0].start, "dd-mmm-yy");
+            console.log(start);
+            res[0].start = start;
+            var finish=dateFormat(res[0].finish, "dd-mmm-yy");
+            res[0].finish = finish;
+            res.result = true;
+            callback(res)
+        }else{
+            callback({
+                result:false,
+                response:settings.messages.error
+            })
+        }
+    })
+}

@@ -231,6 +231,16 @@ var getUserOffers= function(userEmail, callback){
         }
     })
 };
+var getOneOffer = function(callback){
+    var query = "SELECT * from " + settings.tables_names.offers + " WHERE start > now()";
+    sql.exacuteQuery(query, function(res, err){
+        if(!err){
+            callback(res);
+        }
+    })
+};
+module.exports.getOneOffer = getOneOffer;
+
 module.exports.getUserOffers = getUserOffers;
 module.exports.addOfferToUser =  addOfferToUser;
 module.exports.registerCompanyWithNameAndAddress = registerCompanyWithNameAndAddress;

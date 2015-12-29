@@ -166,6 +166,15 @@ module.exports = function(app) {
             }
         })
     });
+    app.get('/onepromo', function (req, res) {
+        offers.getOneOffer(function(result, error){
+            if(error){
+                res.json({result:false})
+            }else{
+                res.json(result);
+            }
+        })
+    });
      //app.post('/api/chgpass', function (req, res) {
     //    var id = req.body.id;
     //    var opass = req.body.oldpass;
