@@ -47,4 +47,4 @@ exports.getOneOffer = function(callback){
             })
         }
     })
-}
+};

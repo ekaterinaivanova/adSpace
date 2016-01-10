@@ -11,14 +11,11 @@ exports.getAll = function(callback){
     sql.getAllCompanies(function(res, err){
         if(!err)
             callback(res);
-    } );
-
+    });
 };
 exports.registerCompanyWithNameAndAddress = function(email, pwd, name, address,callback){
     var hashed_password = crypto.createHash('sha512').update(pwd).digest("hex");
     sql.registerCompanyWithNameAndAddress(email, hashed_password, name, address, function(result, error){
-        console.log(result);
-        console.log("***********");
                 if(error){
                     console.log(error);
                     callback({

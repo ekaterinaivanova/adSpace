@@ -34,5 +34,6 @@ exports.messages = {
     company_update_access_failed:"Company update wasn't  successful! You are not allowed to update the  account",
     error: "An error has occurred!",
     update_offer_failed: "We couldn't update the offer. It doesn't exists or you don't have access to it!",
-    wrongDates:"Start date > finisg date"
+    wrongDates:"Start date > finisg date",
+    offerDoesNotExist: "Offer does not exist!"
 };

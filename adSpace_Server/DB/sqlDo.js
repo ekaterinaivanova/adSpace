@@ -218,6 +218,69 @@ var addOfferToUser = function(userEmail,offerId, callback){
         }
     })
 };
+var updateOfferPicsNumber = function(userId,offerId, count, callback){
+    query = "SELECT * FROM " + settings.tables_names.user_offers + " WHERE user_ID = ? AND offer_ID = ?;";
+    values = [userId, offerId];
+    sql.exacuteQueryWithArgs(query,values, function(res, err){
+        if(!err){
+            if(res.length > 0){
+                var temSt =  parseInt(res[0].number_pic) + parseInt(count);
+
+                query = "UPDATE " +  settings.tables_names.user_offers + " SET number_pic = ? WHERE user_ID = ? AND offer_ID = ?";
+                values = [temSt, userId, offerId];
+                sql.exacuteQueryWithArgs(query,values, function(result, error){
+                    if(!error){
+                        callback({
+                            result:true,
+                            picsNumber: temSt
+                        })
+                    }else{
+                        callback(
+                            {result:false,
+                            response:settings.messages.error
+                        })
+                    }
+                })
+            }else{
+                callback({
+                    result: false,
+                    response: settings.messages.update_offer_failed
+                })
+            }
+        }else{
+            callback({
+                result: false,
+                response: settings.messages.error
+            })
+        }
+    })
+};
+var getOfferPicsNumber = function(userId,offerId, callback){
+    var query = "SELECT * FROM " + settings.tables_names.user_offers + " WHERE user_ID = ? AND offer_ID = ?;";
+    values = [userId, offerId];
+    sql.exacuteQueryWithArgs(query, values, function(res, err){
+        if(!err){
+            if(res.length > 0) {
+                callback({
+                    result: true,
+                    picsNumber: res[0].number_pic
+                })
+            }else{
+                callback({
+                    result: false,
+                    response:settings.messages.offerDoesNotExist
+                })
+            }
+        }else{
+            callback({
+                result: false,
+                response:settings.messages.error
+            })
+        }
+    })
+};
+
+
 var getUserOffers= function(userEmail, callback){
     returnIfExists(userEmail, settings.tables_names.users,function(res, err){
         if(!err && res!=null) {
@@ -232,7 +295,7 @@ var getUserOffers= function(userEmail, callback){
     })
 };
 var getOneOffer = function(callback){
-    var query = "SELECT * from " + settings.tables_names.offers + " WHERE start > now()";
+    var query = "SELECT * from " + settings.tables_names.offers + " WHERE start > now() LIMIT 1";
     sql.exacuteQuery(query, function(res, err){
         if(!err){
             callback(res);
@@ -240,7 +303,8 @@ var getOneOffer = function(callback){
     })
 };
 module.exports.getOneOffer = getOneOffer;
-
+module.exports.getOfferPicsNumber = getOfferPicsNumber;
+module.exports.updateOfferPicsNumber = updateOfferPicsNumber;
 module.exports.getUserOffers = getUserOffers;
 module.exports.addOfferToUser =  addOfferToUser;
 module.exports.registerCompanyWithNameAndAddress = registerCompanyWithNameAndAddress;

@@ -1,14 +1,10 @@
 /**
  * Created by EkaterinaAcc on 07-Nov-15.
  */
-//var chgpass = require('config/chgpass');
-//var register = require('./config/register.js');
-//var login = require('./config/login.js');
 var user = require('./config/user.js');
-//var companyRegister = require('./config/companyRegister.js');
-//var companyLogin = require('./config/companyLogin.js');
 var offers = require('./config/offers.js');
 var companies = require('./config/companies.js');
+var sql = require("../DB/sqlDo.js");
 
 //var settings = require('../settings.js');
 module.exports = function(app) {
@@ -19,7 +15,25 @@ module.exports = function(app) {
         res.end("Node-Android-Project");
     });
 
-
+    app.get("/offer/pics/:userId/:offerId", function(req,res ){
+        var userId = req.params.userId;
+        var offerId = req.params.offerId;
+        sql.getOfferPicsNumber(userId,offerId, function(result, err){
+            if(!err){
+                res.json(result);
+            }
+        })
+    });
+    app.post("/offer/pics/:userId/:offerId/:picsN", function(req, res){
+        var userId = req.params.userId;
+        var offerId = req.params.offerId;
+        var picsN = req.params.picsN;
+        sql.updateOfferPicsNumber(userId, offerId, picsN, function( result, err){
+            if(!err){
+                res.json(result);
+            }
+        })
+    });
     app.post('/login/:email/:pwd', function (req, res) {
         var email = req.params.email;
         var password = req.params.pwd;
